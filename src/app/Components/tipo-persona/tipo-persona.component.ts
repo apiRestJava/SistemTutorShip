@@ -98,11 +98,23 @@ export class TipoPersonaComponent {
     }
 
     if(this.id <= 0 && this.actionForm === 'POST'){
-      this.appServices.setTipoPersona(dataForm).subscribe(data => {
+      this.appServices.setTipoPersona(dataForm).subscribe(data => {        
         this.closeModal();
         this.getAllLista();
         this.resetForm();
         this.toast('Registro satisfactorio.', 1800);
+        this.removeSpinner();
+      }, err => {
+        const errores = err.error.errors;
+        this.message = '';
+        Array.from(errores).forEach(item => {
+          const errs: any = item;
+          this.message += errs.defaultMessage + ' / ';
+          this.toastCss = 'alert alert-dismissible alert-danger';
+          this.toast(this.message, 1800);
+        })
+        this.toogleToast = true;
+        this.toogleModal = false;
         this.removeSpinner();
       })
     }

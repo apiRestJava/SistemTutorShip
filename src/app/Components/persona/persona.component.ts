@@ -129,6 +129,18 @@ export class PersonaComponent {
         this.resetForm();
         this.toast('Registro satisfactorio.', 1800);
         this.removeSpinner();
+      }, err => {
+        const errores = err.error.errors;
+        this.message = '';
+        Array.from(errores).forEach(item => {
+          const errs: any = item;
+          this.message += errs.defaultMessage + ' / ';
+          this.toastCss = 'alert alert-dismissible alert-danger';
+          this.toast(this.message, 1800);
+        })
+        this.toogleToast = true;
+        this.toogleModal = false;
+        this.removeSpinner();
       })
     }
 
