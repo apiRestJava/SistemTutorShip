@@ -15,6 +15,9 @@ export class InstitucionComponent {
   //Path Api
   pathApi: String;
 
+  // Table Tr Selected
+  trClass = '';
+
   // Modal
   toogleModal: boolean;
 
@@ -31,7 +34,8 @@ export class InstitucionComponent {
 
   // Datos de Formulario
   id = 0;
-  nombreFm = "0";
+  rucFm = '';
+  nombreFm = '';
   direccionFm = '';
   correoFm = '';
   celularFm = '';
@@ -39,6 +43,7 @@ export class InstitucionComponent {
 
 
   constructor(private appServices: InstitucionService){
+    this.addSpinner();
     this.getAllLista();
     this.toogleModal = false;
     this.actionButton = 'Guardar';
@@ -61,11 +66,13 @@ export class InstitucionComponent {
   getAllLista(){
     this.appServices.getInstituciones().subscribe((data:any) => {
       this.instituciones = data.content;
+      this.removeSpinner();
     })
   }
 
   mostrarModal(){
     this.resetForm();
+    this.resetFilaSeleccionada();
     this.actionButton = 'Guardar';
     this.actionForm = 'POST';
     this.pathApi = 'Institución'
@@ -75,12 +82,14 @@ export class InstitucionComponent {
 
   closeModal(){
     this.resetForm();
+    this.resetFilaSeleccionada();
     this.toogleModal = false;
   }
 
   resetForm(){
     this.id = 0;
-    this.nombreFm = '0';
+    this.rucFm = '';
+    this.nombreFm = '';
     this.direccionFm = '';
     this.correoFm = '';
     this.celularFm = '';
@@ -88,9 +97,11 @@ export class InstitucionComponent {
   }
 
   sendForm(){
+    this.addSpinner();
     const dataForm = {
         id: this.id,
-        nombre: {id: this.nombreFm},
+        ruc: this.rucFm,
+        nombre: this.nombreFm,
         direccion: this.direccionFm,
         correo: this.correoFm,
         celular: this.celularFm,
@@ -103,6 +114,7 @@ export class InstitucionComponent {
         this.getAllLista();
         this.resetForm();
         this.toast('Registro satisfactorio.', 1800);
+        this.removeSpinner();
       })
     }
 
@@ -111,50 +123,71 @@ export class InstitucionComponent {
         this.closeModal();
         this.getAllLista();
         this.resetForm();
+        this.resetFilaSeleccionada();
         this.toast('Actualizacion satisfactorio.', 1800);
+        this.removeSpinner();
       })
     }
     
 
   }
 
-  editItem(institucion:any){
+  async editItem(event: Event, institucion:any){   
+    this.addSpinner();
+    const parent = ( <HTMLElement>event.target ).parentElement;
+    if(parent?.classList.contains('selected-tr')){
+      await this.resetFilaSeleccionada();
+      this.resetForm();
+      this.removeSpinner();
+    }else{
+      await this.resetFilaSeleccionada();
+      parent?.classList.add('selected-tr');
 
-    this.id = institucion.id;
-    this.nombreFm = institucion.nombre;
-    this.direccionFm = institucion.nombresApellidos;
-    this.correoFm = institucion.correo;
-    this.celularFm = institucion.celular;
-    this.estadoFm = institucion.estado;
+      this.id = institucion.id;
+      this.rucFm = institucion.ruc;
+      this.nombreFm = institucion.nombre;
+      this.direccionFm = institucion.direccion;
+      this.correoFm = institucion.correo;
+      this.celularFm = institucion.celular;
+      this.estadoFm = institucion.estado;
 
-    this.actionButton = 'Actualizar';
-    this.actionForm = 'PUT';
-    this.pathApi = 'Institución'
-    this.titleModal = 'Editar '+ this.pathApi;    
+      this.actionButton = 'Actualizar';
+      this.actionForm = 'PUT';
+      this.pathApi = 'Institución'
+      this.titleModal = 'Editar '+ this.pathApi;
+      this.removeSpinner();
+    }       
 
   }
 
   editModal(){
+    this.addSpinner();
     if(this.id > 0){
+      this.removeSpinner();
       this.toogleModal = true;
     }else{
       this.id = 0;
       this.toastCss = 'alert alert-dismissible alert-danger';
       this.toast('No Existe registro seleccionado, para editar.', 1800);
+      this.removeSpinner();
     }
   }
 
   deleteitem(){
+    this.addSpinner();
     if(this.id > 0){
       this.appServices.deleteInstitucion(this.id).subscribe(data => {
         this.getAllLista();
         this.resetForm();
+        this.resetFilaSeleccionada();
         this.toast('Registro Eliminado Satisfactoriamente.', 1800);
+        this.removeSpinner();
       })
     }else{
       this.id = 0;
       this.toastCss = 'alert alert-dismissible alert-danger';
       this.toast('No Existe registro seleccionado, para eliminar.', 1800);
+      this.removeSpinner();
     }
   }
 
@@ -164,5 +197,23 @@ export class InstitucionComponent {
       setTimeout(() => {
         this.toogleToast = false;
       }, time);
+  }
+
+  async resetFilaSeleccionada(){
+    const table = document.getElementById('table');
+    const filas = (<HTMLElement>table).children[1].children;
+    Array.from(filas).map(fila => {
+      fila.classList.remove('selected-tr');
+    })
+  }
+
+  addSpinner(){
+    const spinner = document.getElementById('spinner');
+    spinner?.classList.add('show');
+  }
+
+  removeSpinner(){
+    const spinner = document.getElementById('spinner');
+    spinner?.classList.remove('show');
   }
 }

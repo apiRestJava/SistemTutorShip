@@ -39,7 +39,7 @@
         <div class="col-12 col-md-12">
             <div class="card mt-4 shadow rounded-card">
                 <div class="card-body">
-                    <table class="table table-hover table-styles">
+                    <table class="table table-hover table-styles" id="table">
                         <thead>
                             <tr>
                                 <th class="th-head">Tipo Persona</th>
@@ -52,7 +52,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let persona of personas" attr.data-item="{{persona.id}}" (click)="editItem(persona)">
+                            <tr *ngFor="let persona of personas" attr.data-item="{{persona.id}}" (click)="editItem($event, persona)">
                                 <td class="td-body"><span class="badge bg-info">{{ persona.tipopersona_id.tipo }}</span></td>
                                 <td class="td-body">{{ persona.nombresApellidos }}</td>
                                 <td class="td-body">{{ persona.correo }}</td>

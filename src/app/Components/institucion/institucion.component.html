@@ -37,9 +37,10 @@
         <div class="col-12 col-md-12">
             <div class="card mt-4 shadow rounded-card">
                 <div class="card-body">
-                    <table class="table table-hover table-styles">
+                    <table class="table table-hover table-styles" id="table">
                         <thead>
                             <tr>
+                                <th class="th-head">RUC</th>
                                 <th class="th-head">Razon Social</th>
                                 <th class="th-head">Dirección</th>
                                 <th class="th-head">Correo Electronico</th>
@@ -48,10 +49,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let institucion of instituciones" attr.data-item="{{institucion.id}}" (click)="editItem(institucion)">
-                                <td class="td-body"><span class="badge bg-info">{{ institucion.nombre }}</span></td>
+                            <tr *ngFor="let institucion of instituciones" attr.data-item="{{institucion.id}}" [class]="trClass" (click)="editItem($event, institucion)">
+                                <td class="td-body">{{ institucion.ruc }}</td>
+                                <td class="td-body">{{ institucion.nombre }}</td>
                                 <td class="td-body">{{ institucion.direccion }}</td>
-                                <td class="td-body">{{ institucion.correo }}</td>
+                                <td class="td-body"><span class="badge bg-info">{{ institucion.correo }}</span></td>
                                 <td class="td-body"><span class="badge bg-primary">{{ institucion.celuar }}</span></td>                                
                                 <td class="td-body"><span class="badge bg-success">{{ institucion.estado }}</span></td>
                             </tr>
@@ -77,14 +79,21 @@
             <div class="modal-body">
                 <div class="row">
 
-                    <div class="col-12 col-md-12">
+                    <div class="col-12 col-md-4">
+                        <div class="form-group">
+                            <label for="ruc" class="label-form">RUC:</label>
+                            <input type="text" class="form-control" name="ruc" id="ruc" [(ngModel)]="rucFm">
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-8">
                         <div class="form-group">
                             <label for="nombre" class="label-form">Razón Social</label>
                             <input type="text" class="form-control" name="nombre" id="nombre" [(ngModel)]="nombreFm">
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-5">
                         <div class="form-group">
                             <label for="correo" class="label-form">Correo Electronico</label>
                             <input type="email" class="form-control" name="correo" id="correo" [(ngModel)]="correoFm">
@@ -98,7 +107,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-3">
                         <div class="form-group">
                             <label for="estado" class="label-form">Estado</label>
                             <select class="form-control text-muted" name="estado" id="estado" [(ngModel)]="estadoFm">
@@ -111,7 +120,7 @@
                     <div class="col-12 col-md-12">
                         <div class="form-group">
                             <label for="direccion" class="label-form">Dirección</label>
-                            <textarea name="direccion" id="direccion" rows="3" [(ngModel)]="direccionFm"></textarea>
+                            <textarea class="form-control" name="direccion" id="direccion" rows="3" [(ngModel)]="direccionFm"></textarea>
                         </div>
                     </div>
 

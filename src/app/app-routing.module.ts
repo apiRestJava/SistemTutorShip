@@ -8,7 +8,7 @@ import { FullLayoutComponent } from './Layout/full-layout/full-layout.component'
 
 const routes: Routes = [
   { path: '', redirectTo: 'Dashboard', pathMatch:'full' },
-  { path: '', component: FullLayoutComponent,
+  { path: '', component: FullLayoutComponent, 
     children:[
       { path: 'Dashboard', component: DashboardComponent },
       { path: 'Institucion', component: InstitucionComponent },

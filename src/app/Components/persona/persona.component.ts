@@ -46,6 +46,7 @@ export class PersonaComponent {
 
 
   constructor(private appServices: PersonaService, private appServiceInstitucion: InstitucionService, private appServiceTipoPersona: TipoPersonaService){
+    this.addSpinner();
     this.getListaPersonas();
     this.toogleModal = false;
     this.actionButton = 'Guardar';
@@ -68,6 +69,7 @@ export class PersonaComponent {
   getListaPersonas(){
     this.appServices.getPersonas().subscribe((data:any) => {
       this.personas = data.content;
+      this.removeSpinner();
     })
 
     this.appServiceInstitucion.getInstituciones().subscribe((data:any) => {
@@ -81,6 +83,7 @@ export class PersonaComponent {
 
   mostrarModal(){
     this.resetForm();
+    this.resetFilaSeleccionada();
     this.actionButton = 'Guardar';
     this.actionForm = 'POST';
     this.pathApi = 'Persona'
@@ -90,6 +93,7 @@ export class PersonaComponent {
 
   closeModal(){
     this.resetForm();
+    this.resetFilaSeleccionada();
     this.toogleModal = false;
   }
 
@@ -105,6 +109,7 @@ export class PersonaComponent {
   }
 
   sendForm(){
+    this.addSpinner();
     const dataForm = {
         id: this.id,
         tipopersona_id: {id: this.tipoPersonaFm},
@@ -123,6 +128,7 @@ export class PersonaComponent {
         this.getListaPersonas();
         this.resetForm();
         this.toast('Registro satisfactorio.', 1800);
+        this.removeSpinner();
       })
     }
 
@@ -131,52 +137,72 @@ export class PersonaComponent {
         this.closeModal();
         this.getListaPersonas();
         this.resetForm();
+        this.resetFilaSeleccionada();
         this.toast('Actualizacion satisfactorio.', 1800);
+        this.removeSpinner();
       })
     }
     
 
   }
 
-  editItem(persona:any){
+  async editItem(event: Event, persona:any){
+    this.addSpinner();
+    const parent = ( <HTMLElement>event.target ).parentElement;
+    if(parent?.classList.contains('selected-tr')){
+      await this.resetFilaSeleccionada();
+      this.resetForm();
+      this.removeSpinner();
+    }else{
+      await this.resetFilaSeleccionada();
+      parent?.classList.add('selected-tr');
 
-    this.id = persona.id;
-    this.tipoPersonaFm = persona.tipopersona_id.id;
-    this.nombresApellidosFm = persona.nombresApellidos;
-    this.correoFm = persona.correo;
-    this.matriculaFm = persona.matricula;
-    this.usuarioFm = persona.usuario;
-    this.estadoFm = persona.estado;
-    this.institucionFm = persona.institucion_id.id;
+      this.id = persona.id;
+      this.tipoPersonaFm = persona.tipopersona_id.id;
+      this.nombresApellidosFm = persona.nombresApellidos;
+      this.correoFm = persona.correo;
+      this.matriculaFm = persona.matricula;
+      this.usuarioFm = persona.usuario;
+      this.estadoFm = persona.estado;
+      this.institucionFm = persona.institucion_id.id;
 
-    this.actionButton = 'Actualizar';
-    this.actionForm = 'PUT';
-    this.pathApi = 'Persona'
-    this.titleModal = 'Editar '+ this.pathApi;    
+      this.actionButton = 'Actualizar';
+      this.actionForm = 'PUT';
+      this.pathApi = 'Persona'
+      this.titleModal = 'Editar '+ this.pathApi;
+      this.removeSpinner();
+    }    
 
   }
 
   editModal(){
+    this.addSpinner();
     if(this.id > 0){
       this.toogleModal = true;
+      this.removeSpinner();
     }else{
       this.id = 0;
       this.toastCss = 'alert alert-dismissible alert-danger';
       this.toast('No Existe registro seleccionado, para editar.', 1800);
+      this.removeSpinner();
     }
   }
 
   deleteitem(){
+    this.addSpinner();
     if(this.id > 0){
       this.appServices.deletePersona(this.id).subscribe(data => {
         this.getListaPersonas();
         this.resetForm();
+        this.resetFilaSeleccionada();
         this.toast('Registro Eliminado Satisfactoriamente.', 1800);
+        this.removeSpinner();
       })
     }else{
       this.id = 0;
       this.toastCss = 'alert alert-dismissible alert-danger';
       this.toast('No Existe registro seleccionado, para eliminar.', 1800);
+      this.removeSpinner();
     }
   }
 
@@ -186,5 +212,23 @@ export class PersonaComponent {
       setTimeout(() => {
         this.toogleToast = false;
       }, time);
+  }
+
+  async resetFilaSeleccionada(){
+    const table = document.getElementById('table');
+    const filas = (<HTMLElement>table).children[1].children;
+    Array.from(filas).map(fila => {
+      fila.classList.remove('selected-tr');
+    })
+  }
+
+  addSpinner(){
+    const spinner = document.getElementById('spinner');
+    spinner?.classList.add('show');
+  }
+
+  removeSpinner(){
+    const spinner = document.getElementById('spinner');
+    spinner?.classList.remove('show');
   }
 }
