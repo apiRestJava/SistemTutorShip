@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class InstitucionService {
 
-  URL = 'http://localhost:9091/api/institucion';
+  // URL = 'http://localhost:9091/api/institucion';
+  URL = 'https://tutor-tm1i.onrender.com/api/institucion';
 
   constructor(private http: HttpClient ) { }
 
